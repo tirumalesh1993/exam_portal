@@ -1,5 +1,7 @@
 from django.contrib import admin
-from .models import Exams, Question
+from .models import Exams, Question, ExamId
+
+admin.site.register(ExamId)
 
 
 @admin.register(Exams)

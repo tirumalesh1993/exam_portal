@@ -11,6 +11,15 @@ class Exams(models.Model):
         return str(self.exam_name)
 
 
+class ExamId(models.Model):
+    id = models.IntegerField(primary_key=True)
+    exam_id = models.IntegerField()
+    player_name = models.CharField(max_length=256)
+
+    def __str__(self):
+        return str(self.exam_id) + ' ' + self.player_name
+
+
 class Question(models.Model):
     id = models.AutoField(primary_key=True, unique=True)
     exam_name = models.ForeignKey(

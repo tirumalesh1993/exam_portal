@@ -1,6 +1,7 @@
 from channels.generic.websocket import WebsocketConsumer
 import json
 from asgiref.sync import async_to_sync
+from .models import ExamId
 
 
 class ExamConsumer(WebsocketConsumer):
@@ -10,7 +11,7 @@ class ExamConsumer(WebsocketConsumer):
         if str(self.user) == 'AnonymousUser':
             self.room_group_name = 'exam_%s' % self.id
         else:
-            self.room_group_name = 'exam_admin'
+            self.room_group_name = 'exam_admin'+str(self.id)
         async_to_sync(self.channel_layer.group_add)(
             self.room_group_name,
             self.channel_name
@@ -29,16 +30,35 @@ class ExamConsumer(WebsocketConsumer):
         message_type = text_data_json['type']
 
         if message_type == 'add_user':
+            a = ExamId.objects.create(exam_id=self.id, player_name=message)
             async_to_sync(self.channel_layer.group_send)(
-                'exam_admin',
+                'exam_admin'+str(self.id),
                 {
                     'type': 'add_user',
                     'message': message,
+                    'player_id': a.id
+                }
+            )
+            async_to_sync(self.channel_layer.group_send)(
+                'exam_%s' % self.id,
+                {
+                    'type': 'add_user',
+                    'message': message,
+                    'player_id': a.id
                 }
             )
         elif message_type == 'check_answer':
             async_to_sync(self.channel_layer.group_send)(
-                'exam_admin',
+                'exam_admin'+str(self.id),
+                {
+                    'type': 'check_answer',
+                    'message': message,
+                    'id': text_data_json['id'],
+                    'user': text_data_json['user']
+                }
+            )
+            async_to_sync(self.channel_layer.group_send)(
+                'exam_%s' % self.id,
                 {
                     'type': 'check_answer',
                     'message': message,

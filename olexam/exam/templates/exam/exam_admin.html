@@ -1,7 +1,7 @@
 <html>
     <head>
         <title>Exam Admin Panel</title>
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	    <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
     </head>
     <body>
@@ -10,6 +10,10 @@
             <div class='row'>
                 <div class='col-md-12'>
                     <h2 class='text-center' style='margin-top: 50px;  padding-bottom: 25px; border-bottom: 1px solid grey;'>Welcome to the Admin Panel of Online Examination Site</h2>
+                </div>
+                <div class='col-md-12'>
+                    <h2 class='text-center' style='margin-top: 50px;  padding-bottom: 25px; border-bottom: 1px solid grey;'>Exam Id: {{ exam_id }}</h2>
+                    <a href="{% url 'home' %}?id={{ exam_id }}">Student Join URL</a>
                 </div>
                 <div class="col-md-12">
                     <div id="users" style="margin-top: 40px;">
@@ -41,7 +45,7 @@
 
         <script>
             var username = '';
-            var url = 'ws://' + window.location.host + '/ws/exam/room/1';
+            var url = 'ws://' + window.location.host + '/ws/exam/room/{{exam_id}}';
             var examSocket = new WebSocket(url);
             var id = 0;
 

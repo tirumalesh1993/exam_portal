@@ -1,3 +1,4 @@
+{% load my_filter %}
 <html>
     <head>
 	    <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -22,6 +23,32 @@
                         <button class="btn btn-success" id="user-join">Submit</button>
                     </div>
                 </div>
+
+                <hr>
+
+                <div class="col-md-12">
+                    <h3>Players Joined</h3>
+                    <div id="players">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th scope="col">#</th>
+                                    <th scope="col">Name</th>
+                                    <th scope="col">Score</th>
+                                </tr>
+                            </thead>
+                            <tbody id="users-data">
+                                {% for player in players %}
+                                <tr>
+                                    <th scope="row"> {{ forloop.counter }}</th>
+                                    <td>{{ player.player_name }}</td>
+                                    <td id="{{player.player_name|replace_spaces}}">0</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -30,9 +57,9 @@
 
         <script>
             var qs= []
-            var id = 0;
+            var id = {{ players.count }};
             var username = '';
-            var url = 'ws://' + window.location.host + '/ws/exam/room/1';
+            var url = 'ws://' + window.location.host + '/ws/exam/room/{{exam_id}}';
             var examSocket = new WebSocket(url);
 
             examSocket.onmessage = function(e) {
@@ -42,6 +69,14 @@
                     $('#user').hide(500);
                     $('#question').show(500);
                     generateQuestion(id);
+                } else if (data.type === 'add_user') {
+                    id = id + 1;
+                    var $users = $('#users-data');
+                    $users.append('<tr> <th scope="row">' + id + '</th><td>' + data.message + '</td><td id = "' + data.message.replaceAll(' ', '_') + '">0</td></tr>');
+                } else if (data.type === 'score') {
+                    var playername = data.user.replaceAll(' ', '_');
+                    score = parseInt($('#'+ playername).html());
+                    $('#'+playername).html(score + data.score);
                 }
             }
 
@@ -94,4 +129,4 @@
             
         </script> 
     </body>
-</html
+</html>
