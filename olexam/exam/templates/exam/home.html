@@ -57,7 +57,8 @@
 
         <script>
             var qs= []
-            var id = {{ players.count }};
+            var id = 0;
+            var players_id = {{ players.count }}
             var username = '';
             var url = 'ws://' + window.location.host + '/ws/exam/room/{{exam_id}}';
             var examSocket = new WebSocket(url);
@@ -70,11 +71,11 @@
                     $('#question').show(500);
                     generateQuestion(id);
                 } else if (data.type === 'add_user') {
-                    id = id + 1;
+                    players_id = players_id + 1;
                     var $users = $('#users-data');
                     var test = data.message.toString();
                     console.log(test.replace(' ', '_'));
-                    $users.append('<tr> <th scope="row">' + id + '</th><td>' + data.message + '</td>' + '' + '<td id = "' + data.message + '">0</td></tr>');
+                    $users.append('<tr> <th scope="row">' + players_id + '</th><td>' + data.message + '</td>' + '' + '<td id = "' + data.message + '">0</td></tr>');
                 } else if (data.type === 'score') {
                     var playername = data.user.replaceAll(' ', '_');
                     score = parseInt($('#'+ playername).html());
