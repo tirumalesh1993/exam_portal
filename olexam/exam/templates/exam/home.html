@@ -1,0 +1,95 @@
+<html>
+    <head>
+        <title>Online Examination Site</title>
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+    </head>
+    <body>
+
+        <div class ='container'>
+            <div class='row'>
+                <div class='col-md-12'>
+                    <h2 class='text-center' style='margin-top: 50px;  padding-bottom: 25px; border-bottom: 1px solid grey;'>Welcome to the Online Examination Site</h2>
+                </div>
+
+                <div class='col-md-12'>
+                    <div id ='question' style="display:none;">
+                    </div>
+                    <div id="user">
+                        <h3 class="text-center">Enter Your Name!</h3>
+                        <input class="text-center" type="text" name="username"  placeholder="your name here">
+                        <button class="btn btn-success" id="user-join">Submit</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+
+        <script>
+            var qs= []
+            var id = 0;
+            var username = '';
+            var url = 'ws://' + window.location.host + '/ws/exam/room/1';
+            var examSocket = new WebSocket(url);
+
+            examSocket.onmessage = function(e) {
+                var data = JSON.parse(e.data);
+                var message = data.message;
+                if(message === 'start') {
+                    $('#user').hide(500);
+                    $('#question').show(500);
+                    generateQuestion(id);
+                }
+            }
+
+            function generateQuestion(id) {
+                $('#question').html('<h3>'+ (id+1) + '. ' + qs[id].q_question + '</h3> <input type="radio" id="option1" name="option" value = "' + qs[id].q_option1 + '"> <label for="option1"> ' + qs[id].q_option1 +'</label><br> <input type=\'radio\' id=\'option2\' name=\'option\' value = \'' + qs[id].q_option2 + '\'> <label for="option2"> ' + qs[id].q_option2 +'</label><br> <input type=\'radio\' id=\'option3\' name=\'option\' value = \'' + qs[id].q_option3 + '\'> <label for="option3"> ' + qs[id].q_option3 +'</label><br> <input type=\'radio\' id=\'option4\' name=\'option\' value = \'' + qs[id].q_option4 + '\'> <label for="option4"> ' + qs[id].q_option4 +'</label><br> <button class ="btn btn-default" id="submitOption">Submit</button>');
+            }
+            $( function() {
+                {% for question in questions %}
+                var q = {
+                    q_id : {{question.id}},
+                    q_question: '{{question.question}}',
+                    q_option1: '{{question.option1}}',
+                    q_option2: '{{question.option2}}',
+                    q_option3: '{{question.option3}}',
+                    q_option4: '{{question.option4}}'
+                };
+                qs.push(q);
+                {% endfor %}
+            });
+            
+            $(document).on('click', '#submitOption', function(e){
+                e.preventDefault();
+                var message = $("input[name='option']:checked").val();
+                if(message) {
+                    examSocket.send(JSON.stringify({'message': message, 'type': 'check_answer', 'user': username, 'id': id}));
+                    if (qs.length === id +1) {
+                        $('#question').html('<h1>Exam Finished</h1>');
+                    } else {
+                        id = id + 1;
+                        generateQuestion(id);
+                    }
+                }
+            });
+
+            $(document).on('click', '#user-join', function(e) {
+                e.preventDefault();
+                var message = $("input[name='username']").val();
+                if(message) {
+                    username = message;
+                    examSocket.send(JSON.stringify({'message': message, 'type': 'add_user'}));
+                    $('#user').html('<h3 class ="text-center">' + message + ' Added to the exam successfully.</h3> <p> Wait for the exam to start!!!</p>');
+                }
+            });
+
+
+
+
+
+            
+            
+        </script> 
+    </body>
+</html

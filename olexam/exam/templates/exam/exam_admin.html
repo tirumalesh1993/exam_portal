@@ -1,0 +1,84 @@
+<html>
+    <head>
+        <title>Exam Admin Panel</title>
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+    </head>
+    <body>
+
+        <div class ='container'>
+            <div class='row'>
+                <div class='col-md-12'>
+                    <h2 class='text-center' style='margin-top: 50px;  padding-bottom: 25px; border-bottom: 1px solid grey;'>Welcome to the Admin Panel of Online Examination Site</h2>
+                </div>
+                <div class="col-md-12">
+                    <div id="users" style="margin-top: 40px;">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th scope="col">#</th>
+                                    <th scope="col">Name</th>
+                                    <th scope="col">Joined Time</th>
+                                    <th scope="col">Score</th>
+                                </tr>
+                            </thead>
+                            <tbody id="users-data">
+
+                            </tbody>
+                        </table>
+                        <br>
+                        <div id="button" class="d-flex flex-row-reverse">
+                            <button class="btn btn-success d-flex flex-row-reverse"  id="start_exam">Start Exam</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
+
+        <script>
+            var username = '';
+            var url = 'ws://' + window.location.host + '/ws/exam/room/1';
+            var examSocket = new WebSocket(url);
+            var id = 0;
+
+            examSocket.onmessage = function(e) {
+                id = id + 1;
+                var data = JSON.parse(e.data);
+                if (data.type === 'add_user') {
+                    var $users = $('#users-data');
+                    $users.append('<tr> <th scope="row">' + id + '</th><td>' + data.message + '</td><td>' + new Date() + '</td><td id = "' + data.message.replaceAll(' ', '_') + '">0</td></tr>');
+                } else if (data.type === 'score') {
+                    var username = data.user.replaceAll(' ', '_');
+                    score = parseInt($('#'+ username).html());
+                    $('#'+username).html(score + data.score)
+                }
+            }
+
+            $(document).on('click', '#user-join', function(e) {
+                e.preventDefault();
+                var message = $("input[name='username']").val();
+                if(message) {
+                    username = message;
+                    examSocket.send(JSON.stringify({'message': message, 'type': 'add_user'}));
+                    $('#user').html('<h3 class ="text-center">' + message + ' Added to the exam successfully.</h3> <p> Wait for the exam to start!!!</p>');
+                }
+            });
+
+            $(document).on('click', '#start_exam', function(e) {
+                e.preventDefault();
+                examSocket.send(JSON.stringify({'message': 'start', 'type': 'start_exam'}));
+                $('#start_exam').attr("disabled", true);
+            });
+
+
+
+
+
+
+
+        </script>
+    </body>
+</html
