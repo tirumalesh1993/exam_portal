@@ -72,7 +72,9 @@
                 } else if (data.type === 'add_user') {
                     id = id + 1;
                     var $users = $('#users-data');
-                    $users.append('<tr> <th scope="row">' + id + '</th><td>' + data.message + '</td><td id = "' + data.message.replaceAll(' ', '_') + '">0</td></tr>');
+                    var test = data.message.toString();
+                    console.log(test.replace(' ', '_'));
+                    $users.append('<tr> <th scope="row">' + id + '</th><td>' + data.message + '</td>' + '' + '<td id = "' + data.message + '">0</td></tr>');
                 } else if (data.type === 'score') {
                     var playername = data.user.replaceAll(' ', '_');
                     score = parseInt($('#'+ playername).html());

@@ -54,7 +54,7 @@
                 var data = JSON.parse(e.data);
                 if (data.type === 'add_user') {
                     var $users = $('#users-data');
-                    $users.append('<tr> <th scope="row">' + id + '</th><td>' + data.message + '</td><td>' + new Date() + '</td><td id = "' + data.message.replaceAll(' ', '_') + '">0</td></tr>');
+                    $users.append('<tr> <th scope="row">' + id + '</th><td>' + data.message + '</td><td>' + new Date() + '</td><td id = "' + data.message.replace(' ', '_') + '">0</td></tr>');
                 } else if (data.type === 'score') {
                     var username = data.user.replaceAll(' ', '_');
                     score = parseInt($('#'+ username).html());
