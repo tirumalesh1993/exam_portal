@@ -73,11 +73,9 @@
                 } else if (data.type === 'add_user') {
                     players_id = players_id + 1;
                     var $users = $('#users-data');
-                    var test = data.message.toString();
-                    console.log(test.replace(' ', '_'));
-                    $users.append('<tr> <th scope="row">' + players_id + '</th><td>' + data.message + '</td>' + '' + '<td id = "' + data.message + '">0</td></tr>');
+                    $users.append('<tr> <th scope="row">' + players_id + '</th><td>' + data.message + '</td>' + '' + '<td id = "' + data.message.replace(' ', '_') + '">0</td></tr>');
                 } else if (data.type === 'score') {
-                    var playername = data.user.replaceAll(' ', '_');
+                    var playername = data.user.replace(' ', '_');
                     score = parseInt($('#'+ playername).html());
                     $('#'+playername).html(score + data.score);
                 }

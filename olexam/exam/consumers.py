@@ -82,9 +82,9 @@ class ExamConsumer(WebsocketConsumer):
         user = event['user']
         answer = event['message']
         id = event['id']
-        print(user)
-        print(answer)
-        print(id)
+        # print(user)
+        # print(answer)
+        # print(id)
         if int(id) == 0 and int(answer) == 8:
             self.send(text_data=json.dumps({
                 'type': 'score',
